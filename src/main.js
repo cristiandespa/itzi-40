@@ -1,3 +1,5 @@
+import '@fontsource/allura/latin-400.css';
+import '@fontsource/allura/latin-ext-400.css';
 import '@fontsource/cormorant-garamond/latin-400.css';
 import '@fontsource/cormorant-garamond/latin-ext-400.css';
 import '@fontsource/cormorant-garamond/latin-400-italic.css';
@@ -20,7 +22,8 @@ let questionIndex = 0;
 let transitionPending = false;
 
 const escapeHtml = (value) => personalize(value).replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
-const elegantText = (value) => escapeHtml(value).replaceAll('❤️', '<span class="inline-heart" aria-hidden="true">♥</span><span class="sr-only">❤️</span>');
+const displayText = (value) => escapeHtml(value).replace(/[\p{L}\p{M}]+(?:-[\p{L}\p{M}]+)+/gu, '<span class="keep-together">$&</span>');
+const elegantText = (value) => displayText(value).replaceAll('❤️', '<span class="inline-heart" aria-hidden="true">♥</span><span class="sr-only">❤️</span>');
 const sleep = (duration) => new Promise((resolve) => window.setTimeout(resolve, duration));
 
 async function showScreen(content, screenName, focus = true) {
@@ -41,7 +44,7 @@ function renderLanding() {
     <div class="age-composition"><span class="age-side">UN NOU CAPITOL</span><h1 id="landing-title" class="hero-age">${config.age}<span>.</span></h1><span class="age-sparkle" aria-hidden="true"></span><span class="age-side age-side-right">ACEIAȘI OCHI. ALTĂ POVESTE.</span></div>
     <h2 class="landing-subtitle">${escapeHtml(text.subtitle)}</h2>
     <div class="little-divider" aria-hidden="true"><span></span>✧<span></span></div>
-    <p class="intro">${escapeHtml(text.intro)}</p>
+    <p class="intro">${displayText(text.intro)}</p>
     <button class="button primary" id="start">${escapeHtml(text.start)}${icon('arrow')}</button>
     <p class="duration">${escapeHtml(text.duration)}</p>
   </section>`, 'landing', false);
@@ -59,9 +62,8 @@ async function renderQuestion() {
     <div class="quiz-progress"><span class="eyebrow">CÂTE PUȚIN DESPRE TINE</span><span class="progress-count" aria-label="Întrebarea ${questionIndex + 1} din ${total}">${questionIndex + 1}<span> / ${total}</span></span></div>
     <div class="progress-track" role="progressbar" aria-label="Progresul întrebărilor" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${questionIndex + 1}"><span style="width:${((questionIndex + 1) / total) * 100}%"></span></div>
     <p class="chapter">${escapeHtml(question.chapter)}</p>
-    <h1 id="question-title" class="question-title" tabindex="-1" data-focus>${escapeHtml(question.question)}</h1>
-    <div class="answers" role="group" aria-labelledby="question-title">${question.answers.map((answer, index) => `<button class="answer" aria-pressed="false" data-answer="${index}"><span class="answer-letter" aria-hidden="true">${String.fromCharCode(65 + index)}</span><span>${escapeHtml(answer)}</span><span class="answer-check">${icon('check')}</span></button>`).join('')}</div>
-    <p class="reaction" role="status" aria-live="polite"></p>
+    <h1 id="question-title" class="question-title" tabindex="-1" data-focus>${displayText(question.question)}</h1>
+    <div class="answers" role="group" aria-labelledby="question-title">${question.answers.map((answer, index) => `<button class="answer" aria-pressed="false" data-answer="${index}"><span class="answer-letter" aria-hidden="true">${String.fromCharCode(65 + index)}</span><span>${displayText(answer)}</span><span class="answer-check">${icon('check')}</span></button>`).join('')}</div>
     <span class="quiz-footnote">Doar tu. Așa cum ești.</span>
   </section>`, 'quiz');
   transitionPending = false;
@@ -81,10 +83,10 @@ async function renderQuestion() {
       button.classList.add('selected');
       button.setAttribute('aria-pressed', 'true');
       answers.forEach((answer) => answer.setAttribute('aria-disabled', 'true'));
-      const reaction = main.querySelector('.reaction');
-      reaction.textContent = personalize(question.reaction);
-      reaction.classList.add('visible');
-      await sleep(650);
+      await sleep(300);
+      await showScreen(`<section class="screen reaction-screen" aria-labelledby="reaction-title"><span class="cinematic-star" aria-hidden="true">✧</span><h1 id="reaction-title" class="reaction" tabindex="-1" data-focus>${elegantText(question.reaction).replace(/[😌😄😂]/gu, '<span class="reaction-emoji">$&</span>')}</h1><span class="cinematic-rule" aria-hidden="true"></span></section>`, 'reaction');
+      await sleep(reducedMotion.matches ? 0 : 350);
+      await sleep(config.reactionDuration);
       questionIndex += 1;
       if (questionIndex < total) await renderQuestion();
       else await renderSequence();
@@ -93,8 +95,8 @@ async function renderQuestion() {
 }
 
 async function renderSequence() {
-  for (const [index, moment] of config.sequence.entries()) {
-    await showScreen(`<section class="screen cinematic"><span class="cinematic-star" aria-hidden="true">✧</span><h1 class="cinematic-text ${index === 2 ? 'italic' : ''}" tabindex="-1" data-focus>${escapeHtml(moment.text)}</h1><span class="cinematic-rule" aria-hidden="true"></span></section>`, 'cinematic');
+  for (const moment of config.sequence) {
+    await showScreen(`<section class="screen cinematic"><span class="cinematic-star" aria-hidden="true">✧</span><h1 class="cinematic-text" tabindex="-1" data-focus>${displayText(moment.text)}</h1><span class="cinematic-rule" aria-hidden="true"></span></section>`, 'cinematic');
     await sleep(moment.duration);
   }
   await showScreen(`<section class="screen unlock"><div class="unlock-symbol">${icon('lock')}</div><p class="eyebrow" lang="en" tabindex="-1" data-focus>${escapeHtml(text.unlocked)}</p><span class="unlock-line" aria-hidden="true"></span></section>`, 'unlock');

@@ -10,10 +10,18 @@ const HybridBinarizer = require('@zxing/library/cjs/core/common/HybridBinarizer.
 const BinaryBitmap = require('@zxing/library/cjs/core/BinaryBitmap.js').default;
 
 async function start(page) {
-  await page.clock.install();
+  await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
   await page.goto('/');
   await page.evaluate(() => document.fonts.ready);
   await page.clock.runFor(700);
+}
+
+async function finishReaction(page) {
+  await page.clock.runFor(950);
+  await expect(page.locator('.reaction')).toBeVisible();
+  await page.clock.fastForward(5000);
+  await page.clock.runFor(500);
 }
 
 async function quiz(page) {
@@ -24,9 +32,8 @@ async function quiz(page) {
     const lastAnswer = page.locator('.answer').last();
     await lastAnswer.click();
     await expect(lastAnswer).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('.reaction')).not.toBeEmpty();
     await lastAnswer.dispatchEvent('click');
-    await page.clock.runFor(1200);
+    await finishReaction(page);
   }
 }
 
@@ -90,7 +97,7 @@ test('every question fits small portrait viewports and keyboard selection works'
     await page.keyboard.press('ArrowDown');
     await expect(answers.nth(1)).toBeFocused();
     await page.keyboard.press('Enter');
-    await page.clock.runFor(1200);
+    await finishReaction(page);
   }
 });
 
@@ -179,13 +186,12 @@ test('gallery navigation survives a missing photo', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await start(page);
   await photoMoment(page);
+  await page.clock.resume();
   await page.getByRole('button', { name: 'Fotografia următoare' }).click();
-  await page.clock.runFor(100);
   await expect(page.locator('.gallery-counter')).toHaveText('02 / 05');
   await expect(page.locator('.photo-slide').nth(1).locator('.photo-fallback')).toBeVisible();
   await expect(page.locator('.photo-slide').nth(1).locator('img')).toBeHidden();
   await page.getByRole('button', { name: 'Fotografia următoare' }).click();
-  await page.clock.runFor(100);
   await expect(page.locator('.gallery-counter')).toHaveText('03 / 05');
   await expect(page.locator('.photo-slide').nth(2).locator('.photo-fallback')).toBeHidden();
 });
@@ -250,6 +256,46 @@ test('landscape and enlarged text remain reachable without horizontal overflow',
   await page.setViewportSize({ width: 390, height: 844 });
   await page.addStyleTag({ content: 'body { zoom: 2; }' });
   await page.locator('.answer').last().click();
-  await page.clock.runFor(1200);
+  await finishReaction(page);
   await expect(page.locator('.progress-count')).toHaveText('2 / 5');
+});
+
+test('each reaction has a dedicated readable screen for five full seconds', async ({ page }) => {
+  await start(page);
+  await page.getByRole('button', { name: 'Începem?' }).click();
+  await page.clock.runFor(700);
+  const reactions = ['Good answer. ❤️', 'Asta voiam să auzim. 😌', 'Unele lucruri chiar rămân.', 'Exact. Sau cel puțin așa sperăm. 😄', 'Răspuns acceptat. Nu mai putem da timpul înapoi. 😂'];
+  for (const reaction of reactions) {
+    const answer = page.locator('.answer').last();
+    await answer.click();
+    await answer.dispatchEvent('click');
+    await page.clock.runFor(870);
+    const heading = page.getByRole('heading', { name: reaction });
+    await expect(heading).toBeFocused();
+    expect(await heading.evaluate((element) => parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(46);
+    await expectFits(page);
+    await page.clock.fastForward(4999);
+    await expect(heading).toBeVisible();
+    await expect(page.locator('.reaction-screen')).not.toHaveClass(/leaving/);
+    await page.clock.runFor(1);
+    await expect(page.locator('.reaction-screen')).toHaveClass(/leaving/);
+    await page.clock.runFor(300);
+  }
+  await expect(page.getByRole('heading', { name: 'Perfect.' })).toBeVisible();
+});
+
+test('festive typography supports Romanian and keeps să-ți on one line', async ({ page }) => {
+  await start(page);
+  expect(await page.locator('.landing-subtitle').evaluate((element) => getComputedStyle(element).fontFamily)).toContain('Allura');
+  expect(await page.evaluate(() => document.fonts.check('52px Allura', 'Yțy să-ți amintim'))).toBe(true);
+  await quiz(page);
+  for (const duration of [1200, 1600, 1700, 2600]) await page.clock.runFor(duration + 220);
+  const phrase = page.locator('.cinematic-text .keep-together');
+  await expect(phrase).toHaveText('să-ți');
+  for (const width of [320, 360, 390, 412, 768]) {
+    await page.setViewportSize({ width, height: 740 });
+    expect(await phrase.evaluate((element) => getComputedStyle(element).whiteSpace)).toBe('nowrap');
+    expect(await phrase.evaluate((element) => element.getClientRects().length)).toBe(1);
+    await expectFits(page);
+  }
 });

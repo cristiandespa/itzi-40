@@ -1,3 +1,5 @@
+import '@fontsource/allura/latin-400.css';
+import '@fontsource/allura/latin-ext-400.css';
 import '@fontsource/cormorant-garamond/latin-400.css';
 import '@fontsource/cormorant-garamond/latin-ext-400.css';
 import '@fontsource/cormorant-garamond/latin-400-italic.css';
