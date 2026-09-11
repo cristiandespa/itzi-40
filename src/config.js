@@ -1,7 +1,7 @@
 export const birthdayConfig = {
   name: 'Yțy',
   age: 40,
-  reactionDuration: 5000,
+  reactionDuration: 4000,
   photos: [
     { src: 'images/birthday-photo.jpg', position: '50% 40%', alt: '{name}, într-o rochie neagră' },
     { src: 'images/birthday-city-view.jpg', position: '50% 45%', alt: '{name}, deasupra orașului' },
@@ -17,6 +17,7 @@ export const birthdayConfig = {
     intro: 'Nu există răspunsuri greșite. Doar răspunsuri care spun câte ceva despre tine.',
     start: 'Începem?',
     duration: '5 întrebări. Aproximativ 2 minute.',
+    reactionContinue: 'Continuă',
     unlocked: 'SURPRISE UNLOCKED',
     photoTitle: '{age} looks good on you.',
     photoCaption: 'Și acesta e doar începutul.',

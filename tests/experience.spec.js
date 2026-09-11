@@ -20,7 +20,7 @@ async function start(page) {
 async function finishReaction(page) {
   await page.clock.runFor(950);
   await expect(page.locator('.reaction')).toBeVisible();
-  await page.clock.fastForward(5000);
+  await page.clock.fastForward(4000);
   await page.clock.runFor(500);
 }
 
@@ -265,7 +265,7 @@ test('landscape and enlarged text remain reachable without horizontal overflow',
   await expect(page.locator('.progress-count')).toHaveText('2 / 5');
 });
 
-test('each reaction has a dedicated readable screen for five full seconds', async ({ page }) => {
+test('each reaction has a dedicated readable screen for four full seconds', async ({ page }) => {
   await start(page);
   await page.getByRole('button', { name: 'Începem?' }).click();
   await page.clock.runFor(700);
@@ -279,7 +279,7 @@ test('each reaction has a dedicated readable screen for five full seconds', asyn
     await expect(heading).toBeFocused();
     expect(await heading.evaluate((element) => parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(46);
     await expectFits(page);
-    await page.clock.fastForward(4999);
+    await page.clock.fastForward(3999);
     await expect(heading).toBeVisible();
     await expect(page.locator('.reaction-screen')).not.toHaveClass(/leaving/);
     await page.clock.runFor(1);
@@ -303,4 +303,39 @@ test('festive typography supports Romanian and keeps să-ți on one line', async
     expect(await phrase.evaluate((element) => element.getClientRects().length)).toBe(1);
     await expectFits(page);
   }
+});
+
+test('reaction can advance by touch, click or keyboard without skipping questions', async ({ page, isMobile }) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await start(page);
+  await page.getByRole('button', { name: 'Începem?' }).click();
+  await page.clock.runFor(700);
+  for (let index = 0; index < 5; index += 1) {
+    await expect(page.locator('.progress-count')).toHaveText(`${index + 1} / 5`);
+    await page.locator('.answer').last().click();
+    await page.clock.runFor(950);
+    const button = page.getByRole('button', { name: 'Continuă', exact: true });
+    await expect(button).toBeEnabled();
+    await expect(button).toHaveText('');
+    await expect(page.getByText('Atinge pentru a continua')).toHaveCount(0);
+    await expectFits(page);
+    if (index === 1 || index === 2) {
+      await button.focus();
+      await page.keyboard.press(index === 1 ? 'Enter' : 'Space');
+    } else if (index === 3) {
+      await page.locator('#experience').evaluate((element) => { element.click(); element.click(); });
+    } else {
+      if (index === 4) await page.clock.fastForward(3900);
+      if (isMobile) await button.tap();
+      else await button.click();
+    }
+    await page.clock.runFor(300);
+    if (index < 4) {
+      await expect(page.locator('.progress-count')).toHaveText(`${index + 2} / 5`);
+      await page.clock.fastForward(5000);
+      await expect(page.locator('.progress-count')).toHaveText(`${index + 2} / 5`);
+      await expect(page.locator('.answer[aria-pressed="true"]')).toHaveCount(0);
+    }
+  }
+  await expect(page.getByRole('heading', { name: 'Perfect.' })).toBeVisible();
 });

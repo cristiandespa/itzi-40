@@ -38,6 +38,24 @@ async function showScreen(content, screenName, focus = true) {
   if (focus) main.querySelector('[data-focus]')?.focus({ preventScroll: true });
 }
 
+function waitForReactionAdvance() {
+  return new Promise((resolve) => {
+    const button = main.querySelector('.reaction-continue');
+    let finished = false;
+    const advance = () => {
+      if (finished) return;
+      finished = true;
+      window.clearTimeout(timeout);
+      main.removeEventListener('click', advance);
+      button.disabled = true;
+      resolve();
+    };
+    const timeout = window.setTimeout(advance, config.reactionDuration);
+    button.disabled = false;
+    main.addEventListener('click', advance);
+  });
+}
+
 function renderLanding() {
   showScreen(`<section class="screen landing" aria-labelledby="landing-title">
     <p class="eyebrow">${escapeHtml(text.eyebrow)}</p>
@@ -84,9 +102,9 @@ async function renderQuestion() {
       button.setAttribute('aria-pressed', 'true');
       answers.forEach((answer) => answer.setAttribute('aria-disabled', 'true'));
       await sleep(300);
-      await showScreen(`<section class="screen reaction-screen" aria-labelledby="reaction-title"><span class="cinematic-star" aria-hidden="true">✧</span><h1 id="reaction-title" class="reaction" tabindex="-1" data-focus>${elegantText(question.reaction).replace(/[😌😄😂]/gu, '<span class="reaction-emoji">$&</span>')}</h1><span class="cinematic-rule" aria-hidden="true"></span></section>`, 'reaction');
+      await showScreen(`<section class="screen reaction-screen" aria-labelledby="reaction-title"><span class="cinematic-star" aria-hidden="true">✧</span><h1 id="reaction-title" class="reaction" tabindex="-1" data-focus>${elegantText(question.reaction).replace(/[😌😄😂]/gu, '<span class="reaction-emoji">$&</span>')}</h1><span class="cinematic-rule" aria-hidden="true"></span><button class="reaction-continue" aria-label="${escapeHtml(text.reactionContinue)}" disabled></button></section>`, 'reaction');
       await sleep(reducedMotion.matches ? 0 : 350);
-      await sleep(config.reactionDuration);
+      await waitForReactionAdvance();
       questionIndex += 1;
       if (questionIndex < total) await renderQuestion();
       else await renderSequence();
