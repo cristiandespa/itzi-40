@@ -317,10 +317,17 @@ test('reaction can advance by touch, click or keyboard without skipping question
     const button = page.getByRole('button', { name: 'Continuă', exact: true });
     await expect(button).toBeEnabled();
     await expect(button).toHaveText('');
+    if (await page.evaluate(() => CSS.supports('-webkit-tap-highlight-color', 'transparent'))) {
+      await expect(page.locator('#experience')).toHaveCSS('-webkit-tap-highlight-color', 'rgba(0, 0, 0, 0)');
+    }
+    await expect(button).toHaveCSS('appearance', 'none');
     await expect(page.getByText('Atinge pentru a continua')).toHaveCount(0);
     await expectFits(page);
     if (index === 1 || index === 2) {
-      await button.focus();
+      await page.keyboard.press('Tab');
+      await expect(button).toBeFocused();
+      await expect(button).toHaveCSS('outline-style', 'solid');
+      await expect(button).toHaveCSS('outline-width', '2px');
       await page.keyboard.press(index === 1 ? 'Enter' : 'Space');
     } else if (index === 3) {
       await page.locator('#experience').evaluate((element) => { element.click(); element.click(); });
