@@ -57,6 +57,7 @@ async function expectFits(page) {
 test('complete experience, no early reveal, safe media fallbacks', async ({ page }) => {
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
+  await page.route('**/images/birthday-photo.jpg', (route) => route.fulfill({ status: 404, body: '' }));
   await start(page);
   await expectFits(page);
   await expect(page.getByText(/mesaj|audio|surpriz/i)).toHaveCount(0);

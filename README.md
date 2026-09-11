@@ -10,7 +10,7 @@ Node.js 22.12+ și npm: `npm install`, apoi `npm run dev`. Pentru producție: `n
 
 Totul se modifică în `src/config.js`: `name`, `age`, `photo`, `photoPosition`, `audio`, `texts`, `questions` și `sequence`. Textele acceptă `{name}` și `{age}`. Dacă schimbi vârsta, adaptează și subtitlul „Patru decenii”. Numele inițial este „Yțy”.
 
-- Fotografie: `public/images/birthday-photo.jpg`. Pentru alt fișier, modifică doar `photo`. `photoPosition` controlează încadrarea feței. Fără fotografie apare o copertă cu numele și vârsta, fără imagine deteriorată.
+- Fotografie: `public/images/birthday-photo.jpg` (este inclus cadrul în rochie neagră). Pentru alt fișier, modifică doar `photo`. `photoPosition` controlează încadrarea feței. Fără fotografie apare o copertă cu numele și vârsta, fără imagine deteriorată.
 - Mesaje: `public/audio/la-multi-ani.mp3`. Fișierul real nu este inclus. Până îl adaugi, playerul arată un mesaj discret și dezactivează redarea/descărcarea. Nu există autoplay.
 - Folosește căi locale, de exemplu `images/birthday-photo.jpg`; acestea funcționează și sub adresa unui repository GitHub Pages.
 - QR: deschide `/qr.html` (sau `/nume-repository/qr.html`), introdu URL-ul public final și descarcă PNG-ul. Generarea este locală în browser; verifică scanarea înainte de imprimare.
