@@ -1,5 +1,5 @@
 export const birthdayConfig = {
-  name: 'Itzi',
+  name: 'Yțy',
   age: 40,
   photo: 'images/birthday-photo.jpg',
   photoPosition: '50% 40%',
