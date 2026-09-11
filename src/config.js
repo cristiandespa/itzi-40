@@ -11,7 +11,7 @@ export const birthdayConfig = {
   ],
   audio: 'audio/la-multi-ani.mp3',
   texts: {
-    pageTitle: '{name} · Un nou capitol',
+    pageTitle: '{name} · Povestea continuă',
     eyebrow: 'ASTĂZI, TOTUL E DESPRE TINE',
     subtitle: 'Patru decenii. O mulțime de amintiri. Și câteva întrebări.',
     intro: 'Nu există răspunsuri greșite. Doar răspunsuri care spun câte ceva despre tine.',
@@ -23,7 +23,8 @@ export const birthdayConfig = {
     galleryHint: 'Glisează pentru mai multe amintiri',
     continue: 'Mai departe ❤️',
     audioTitle: 'La mulți ani! ❤️',
-    audioSubtitle: 'Un mesaj de la oamenii care țin la tine.',
+    audioQuote: 'Viața chiar începe cu adevărat la {age} de ani. Până atunci faci cercetare.',
+    audioPlayerLabel: 'Câteva voci de la oamenii care țin la tine',
     audioNote: 'Păstrează-l. Noi probabil n-o să mai fim niciodată atât de drăguți. ❤️',
     download: 'Descarcă amintirea',
     audioLoading: 'Pregătim un moment doar al tău…',

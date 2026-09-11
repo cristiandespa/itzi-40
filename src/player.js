@@ -1,4 +1,4 @@
-import { birthdayConfig as config, assetUrl } from './config.js';
+import { birthdayConfig as config, assetUrl, personalize } from './config.js';
 import { icon } from './icons.js';
 
 export function formatTime(seconds) {
@@ -7,7 +7,8 @@ export function formatTime(seconds) {
 }
 
 export function createAudioPlayer(container, download) {
-  container.innerHTML = `<div class="player"><div class="player-heading"><span class="player-dot"></span><span>VOCILE OAMENILOR TĂI</span><span class="player-heart">${icon('heart')}</span></div><div class="player-controls"><button class="play-button" aria-label="Redă mesajul audio" disabled>${icon('play')}</button><div class="waveform" aria-hidden="true">${Array.from({ length: 44 }, (_, index) => `<span style="--height:${20 + (Math.sin(index * 1.7) + 1) * 20 + (Math.cos(index * 0.7) + 1) * 10}%;--delay:${index * -0.08}s"></span>`).join('')}</div></div><label class="sr-only" for="audio-progress">Poziția în mesajul audio</label><input id="audio-progress" class="audio-progress" type="range" min="0" max="100" step="0.1" value="0" disabled aria-valuetext="0:00 din 0:00" /><div class="player-times"><span class="current-time">0:00</span><span class="total-time">0:00</span></div><p class="player-status" role="status" aria-live="polite"></p><button class="retry-button" hidden></button><audio preload="metadata"></audio></div>`;
+  container.innerHTML = `<div class="player"><div class="player-heading"><span class="player-dot"></span><span class="player-label"></span><span class="player-heart">${icon('heart')}</span></div><div class="player-controls"><button class="play-button" aria-label="Redă mesajul audio" disabled>${icon('play')}</button><div class="waveform" aria-hidden="true">${Array.from({ length: 44 }, (_, index) => `<span style="--height:${20 + (Math.sin(index * 1.7) + 1) * 20 + (Math.cos(index * 0.7) + 1) * 10}%;--delay:${index * -0.08}s"></span>`).join('')}</div></div><label class="sr-only" for="audio-progress">Poziția în mesajul audio</label><input id="audio-progress" class="audio-progress" type="range" min="0" max="100" step="0.1" value="0" disabled aria-valuetext="0:00 din 0:00" /><div class="player-times"><span class="current-time">0:00</span><span class="total-time">0:00</span></div><p class="player-status" role="status" aria-live="polite"></p><button class="retry-button" hidden></button><audio preload="metadata"></audio></div>`;
+  container.querySelector('.player-label').textContent = personalize(config.texts.audioPlayerLabel);
   const audio = container.querySelector('audio');
   const play = container.querySelector('.play-button');
   const slider = container.querySelector('.audio-progress');

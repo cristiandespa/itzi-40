@@ -137,13 +137,12 @@ body[data-screen='quiz'] #particles { opacity: .35; }
 .audio-screen { max-width: 530px; }
 .heart-seal { width: 54px; height: 54px; margin: 0 auto 20px; display: grid; place-items: center; border: 1px solid #b9977359; border-radius: 50%; color: #a28158; }
 .heart-seal .icon { width: 23px; }
-.audio-screen > .eyebrow { font-size: 9px; letter-spacing: .15em; }
-.audio-title { font: 400 clamp(54px, 7vw, 80px)/1.1 var(--script); margin: 14px 0; }
+.audio-quote { font: italic 24px/1.25 var(--serif); color: #8b704b; max-width: 440px; margin: 0 auto; text-wrap: balance; }
+.audio-title { font: 400 clamp(54px, 7vw, 80px)/1.1 var(--script); margin: 14px 0 18px; }
 .inline-heart { display: inline-block; font-size: .6em; vertical-align: .1em; color: #a47c60; font-style: normal; }
-.audio-subtitle { color: var(--muted); font-size: 16px; line-height: 1.7; max-width: 350px; margin: 0 auto 30px; }
 .player { background: #fffaf285; border: 1px solid #d3c1ac9e; border-radius: 21px; box-shadow: 0 10px 34px #70453207; padding: 24px 26px 16px; text-align: left; }
-.player-heading { display: flex; gap: 8px; align-items: center; font-size: 9px; letter-spacing: .14em; color: #8b755c; }
-.player-dot { width: 5px; height: 5px; border-radius: 50%; background: #a98657; }
+.player-heading { display: flex; gap: 10px; align-items: center; font-size: 13px; line-height: 1.5; color: #8b755c; }
+.player-dot { width: 5px; height: 5px; flex-shrink: 0; border-radius: 50%; background: #a98657; }
 .player-heart { margin-left: auto; }
 .player-heart .icon { width: 16px; height: 16px; }
 .player-controls { display: flex; align-items: center; gap: 23px; margin-top: 22px; }
@@ -234,8 +233,6 @@ body[data-screen='quiz'] #particles { opacity: .35; }
   .photo-caption { font-size: 22px; }
   .continue-slot { margin-top: 18px; min-height: 60px; }
   .audio-title { font-size: 57px; }
-  .audio-screen > .eyebrow { font-size: 8px; }
-  .audio-subtitle { margin-bottom: 22px; }
   .player { padding: 20px 20px 15px; }
   .player-controls { gap: 18px; }
   .play-button { width: 55px; height: 55px; }
@@ -262,7 +259,6 @@ body[data-screen='quiz'] #particles { opacity: .35; }
   .photo-frame { max-height: 39svh; width: min(76vw, 280px); }
   .photo-caption { margin-top: 12px; font-size: 20px; }
   .heart-seal { margin-bottom: 13px; width: 45px; height: 45px; }
-  .audio-subtitle { margin-bottom: 20px; }
   .audio-note { margin-top: 20px; }
   .audio-signature { margin-top: 14px; }
 }

@@ -136,9 +136,8 @@ async function renderPhoto() {
 async function renderAudio() {
   await showScreen(`<section class="screen audio-screen" aria-labelledby="audio-title">
     <div class="heart-seal" aria-hidden="true">${icon('heart')}</div>
-    <p class="eyebrow">CELE MAI FRUMOASE LUCRURI NU SUNT LUCRURI</p>
+    <p class="audio-quote">${displayText(text.audioQuote)}</p>
     <h1 id="audio-title" class="audio-title" tabindex="-1" data-focus>${elegantText(text.audioTitle)}</h1>
-    <p class="audio-subtitle">${escapeHtml(text.audioSubtitle)}</p>
     <div id="audio-player"></div>
     <p class="audio-note">${elegantText(text.audioNote)}</p>
     <a class="download-link" id="download-audio" aria-disabled="true" tabindex="-1">${icon('download')}${escapeHtml(text.download)}</a>

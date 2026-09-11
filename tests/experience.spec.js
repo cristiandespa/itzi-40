@@ -67,6 +67,7 @@ test('complete experience, no early reveal, safe media fallbacks', async ({ page
   await page.route('**/images/birthday-photo.jpg', (route) => route.fulfill({ status: 404, body: '' }));
   await start(page);
   await expectFits(page);
+  await expect(page).toHaveTitle('Yțy · Povestea continuă');
   await expect(page.getByText(/mesaj|audio|surpriz/i)).toHaveCount(0);
   await photoMoment(page);
   await expect(page.getByRole('heading', { name: '40 looks good on you.' })).toBeVisible();
@@ -76,6 +77,10 @@ test('complete experience, no early reveal, safe media fallbacks', async ({ page
   await page.getByRole('button', { name: 'Mai departe ❤️' }).click();
   await page.clock.runFor(700);
   await expect(page.getByRole('heading', { name: 'La mulți ani! ❤️' })).toBeVisible();
+  await expect(page.locator('.audio-quote')).toHaveText('Viața chiar începe cu adevărat la 40 de ani. Până atunci faci cercetare.');
+  await expect(page.locator('.player-label')).toHaveText('Câteva voci de la oamenii care țin la tine');
+  await expect(page.locator('.audio-subtitle')).toHaveCount(0);
+  await expect(page.getByText(/cele mai frumoase lucruri|vocile oamenilor tăi|un mesaj de la oamenii/i)).toHaveCount(0);
   await expect(page.locator('.player-status')).toContainText('Amintirea ta e pe drum');
   await expect(page.locator('.play-button')).toBeDisabled();
   await expect(page.locator('#download-audio')).toHaveAttribute('aria-disabled', 'true');
