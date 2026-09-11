@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ro">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f6f1e8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <title>Un cod către un moment special</title>
+  </head>
+  <body class="qr-page">
+    <div class="ambient" aria-hidden="true"><div class="orb orb-one"></div><div class="orb orb-two"></div><div class="orbit orbit-one"></div></div>
+    <header class="masthead"><a class="wordmark" href="./" aria-label="Deschide experiența aniversară"><span>O invitație</span><span class="wordmark-star" aria-hidden="true">✧</span></a><span class="edition">DOAR PENTRU EA</span></header>
+    <main id="experience">
+      <section class="screen qr-screen" aria-labelledby="qr-title">
+        <p class="eyebrow">UN MIC COD. UN MOMENT MARE.</p>
+        <h1 class="qr-title" id="qr-title">Totul începe<br />cu o scanare.</h1>
+        <p class="qr-description">Adaugă adresa finală a site-ului. Descarcă apoi codul și pune-l pe felicitare.</p>
+        <form class="qr-form" novalidate>
+          <label for="site-url">Adresa site-ului aniversar</label>
+          <input id="site-url" type="url" inputmode="url" autocomplete="url" placeholder="https://…" required aria-describedby="qr-error" />
+          <button class="button primary" type="submit">Generează codul QR <span aria-hidden="true">↗</span></button>
+          <p class="qr-error" id="qr-error" role="alert"></p>
+        </form>
+        <div class="qr-result" hidden><div class="qr-paper"><canvas id="qr-canvas" role="img" aria-label="Cod QR către site-ul aniversar"></canvas></div><a class="button" id="qr-download" download="invitatie-aniversara-qr.png">Descarcă PNG</a><p class="qr-hint">Scanează-l o dată înainte de a-l imprima.<br />Codul este generat aici, în browserul tău.</p></div>
+      </section>
+    </main>
+    <footer class="page-footer">O INVITAȚIE LA O AMINTIRE</footer>
+    <script type="module" src="/src/qr.js"></script>
+  </body>
+</html>
