@@ -63,7 +63,7 @@ function renderLanding() {
     <h2 class="landing-subtitle">${escapeHtml(text.subtitle)}</h2>
     <div class="little-divider" aria-hidden="true"><span></span>✧<span></span></div>
     <p class="intro">${displayText(text.intro)}</p>
-    <button class="button primary" id="start">${escapeHtml(text.start)}${icon('arrow')}</button>
+    <button class="button primary experience-cta" id="start"><span class="button-label">${elegantText(text.start)}</span><span class="button-direction" aria-hidden="true">${icon('arrow')}</span></button>
     <p class="duration">${escapeHtml(text.duration)}</p>
   </section>`, 'landing', false);
   main.querySelector('#start').addEventListener('click', () => {
@@ -81,7 +81,7 @@ async function renderQuestion() {
     <div class="progress-track" role="progressbar" aria-label="Progresul întrebărilor" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${questionIndex + 1}"><span style="width:${((questionIndex + 1) / total) * 100}%"></span></div>
     <p class="chapter">${escapeHtml(question.chapter)}</p>
     <h1 id="question-title" class="question-title" tabindex="-1" data-focus>${displayText(question.question)}</h1>
-    <div class="answers" role="group" aria-labelledby="question-title">${question.answers.map((answer, index) => `<button class="answer" aria-pressed="false" data-answer="${index}"><span class="answer-letter" aria-hidden="true">${String.fromCharCode(65 + index)}</span><span>${displayText(answer)}</span><span class="answer-check">${icon('check')}</span></button>`).join('')}</div>
+    <div class="answers" role="group" aria-labelledby="question-title">${question.answers.map((answer, index) => `<button class="answer" aria-pressed="false" data-answer="${index}"><span class="answer-letter" aria-hidden="true">${String.fromCharCode(65 + index)}</span><span>${displayText(answer.text)}</span><span class="answer-check">${icon('check')}</span></button>`).join('')}</div>
     <span class="quiz-footnote">Doar tu. Așa cum ești.</span>
   </section>`, 'quiz');
   transitionPending = false;
@@ -102,7 +102,7 @@ async function renderQuestion() {
       button.setAttribute('aria-pressed', 'true');
       answers.forEach((answer) => answer.setAttribute('aria-disabled', 'true'));
       await sleep(300);
-      await showScreen(`<section class="screen reaction-screen" aria-labelledby="reaction-title"><span class="cinematic-star" aria-hidden="true">✧</span><h1 id="reaction-title" class="reaction" tabindex="-1" data-focus>${elegantText(question.reaction).replace(/[😌😄😂]/gu, '<span class="reaction-emoji">$&</span>')}</h1><span class="cinematic-rule" aria-hidden="true"></span><button class="reaction-continue" aria-label="${escapeHtml(text.reactionContinue)}" disabled></button></section>`, 'reaction');
+      await showScreen(`<section class="screen reaction-screen" aria-labelledby="reaction-title"><span class="cinematic-star" aria-hidden="true">✧</span><h1 id="reaction-title" class="reaction" tabindex="-1" data-focus>${elegantText(question.answers[index].reaction).replace(/[😌😄😂]/gu, '<span class="reaction-emoji">$&</span>')}</h1><span class="cinematic-rule" aria-hidden="true"></span><button class="reaction-continue" aria-label="${escapeHtml(text.reactionContinue)}" disabled></button></section>`, 'reaction');
       await sleep(reducedMotion.matches ? 0 : 350);
       await waitForReactionAdvance();
       questionIndex += 1;
@@ -136,7 +136,7 @@ async function renderPhoto() {
       <p class="sr-only gallery-status" id="gallery-status" role="status" aria-live="polite" aria-atomic="true"></p>
     </div>
     <p class="photo-caption">${escapeHtml(text.photoCaption)}</p>
-    <div class="continue-slot"><button class="button primary photo-continue" id="continue" hidden>${escapeHtml(text.continue)}${icon('arrow')}</button></div>
+    <div class="continue-slot"><button class="button primary experience-cta photo-continue" id="continue" hidden><span class="button-label">${elegantText(text.continue)}</span><span class="button-direction" aria-hidden="true">${icon('arrow')}</span></button></div>
   </section>`, 'photo');
   const gallery = createPhotoGallery(main.querySelector('.photo-gallery'), config);
   await Promise.race([gallery.ready, sleep(5000)]);

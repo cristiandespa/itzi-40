@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { PNG } from 'pngjs';
 import { createRequire } from 'node:module';
 import { readFile } from 'node:fs/promises';
+import { birthdayConfig, personalize } from '../src/config.js';
 
 const require = createRequire(import.meta.url);
 const QRCodeReader = require('@zxing/library/cjs/core/qrcode/QRCodeReader.js').default;
@@ -269,7 +270,7 @@ test('each reaction has a dedicated readable screen for four full seconds', asyn
   await start(page);
   await page.getByRole('button', { name: 'Începem?' }).click();
   await page.clock.runFor(700);
-  const reactions = ['Good answer. ❤️', 'Asta voiam să auzim. 😌', 'Unele lucruri chiar rămân.', 'Exact. Sau cel puțin așa sperăm. 😄', 'Răspuns acceptat. Nu mai putem da timpul înapoi. 😂'];
+  const reactions = ['Cu oamenii potriviți, și zilele obișnuite devin amintiri. ❤️', 'Încredere, loialitate și acces la sezonul următor. 😄', 'Văzuți. Ascultați. Iubiți. Asta nu se uită.', 'Le luăm pe toate. La 40 știm ce vrem. 😄', 'Nu e vârsta. E o relație tot mai serioasă cu canapeaua. 😂'];
   for (const reaction of reactions) {
     const answer = page.locator('.answer').last();
     await answer.click();
@@ -287,6 +288,66 @@ test('each reaction has a dedicated readable screen for four full seconds', asyn
     await page.clock.runFor(300);
   }
   await expect(page.getByRole('heading', { name: 'Perfect.' })).toBeVisible();
+});
+
+for (const answerIndex of [0, 1, 2, 3]) {
+  test(`personalized reactions match answer path ${answerIndex + 1} and fit a small phone`, async ({ page, isMobile }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await start(page);
+    await page.getByRole('button', { name: 'Începem?' }).click();
+    await page.clock.runFor(700);
+    for (const [questionIndex, question] of birthdayConfig.questions.entries()) {
+      const selectedIndex = Math.min(answerIndex, question.answers.length - 1);
+      const answer = question.answers[selectedIndex];
+      await expect(page.locator('.progress-count')).toHaveText(`${questionIndex + 1} / 5`);
+      await expect(page.locator('.answer')).toHaveCount(question.answers.length);
+      const selectedButton = page.locator('.answer').nth(selectedIndex);
+      await expect(selectedButton).toContainText(personalize(answer.text));
+      await selectedButton.click();
+      await page.clock.runFor(950);
+      await expect(page.getByRole('heading', { name: personalize(answer.reaction), exact: true })).toBeVisible();
+      await expectFits(page);
+      const next = page.getByRole('button', { name: 'Continuă', exact: true });
+      if (isMobile) await next.tap();
+      else await next.click();
+      await page.clock.runFor(700);
+    }
+    await expect(page.getByRole('heading', { name: 'Perfect.', exact: true })).toBeVisible();
+  });
+}
+
+test('main buttons and their labels stay centered on mobile and desktop', async ({ page }) => {
+  await start(page);
+  const viewports = [
+    { width: 320, height: 568 },
+    { width: 390, height: 844 },
+    { width: 412, height: 892 },
+    { width: 768, height: 1024 },
+    { width: 1440, height: 900 },
+  ];
+  for (const buttonName of ['Începem?', 'Mai departe ❤️']) {
+    if (buttonName === 'Mai departe ❤️') await photoMoment(page);
+    for (const viewport of viewports) {
+      await page.setViewportSize(viewport);
+      await page.clock.runFor(700);
+      const button = page.getByRole('button', { name: buttonName, exact: true });
+      const label = button.locator('.button-label');
+      const buttonBounds = await button.boundingBox();
+      const labelBounds = await label.boundingBox();
+      expect(Math.abs(buttonBounds.x + buttonBounds.width / 2 - viewport.width / 2)).toBeLessThanOrEqual(1);
+      expect(Math.abs(labelBounds.x + labelBounds.width / 2 - viewport.width / 2)).toBeLessThanOrEqual(1);
+      expect(buttonBounds.height).toBeGreaterThanOrEqual(56);
+      expect(labelBounds.height).toBeLessThanOrEqual(24);
+      await expect(label).toHaveCSS('text-align', 'center');
+      if (await page.evaluate(() => CSS.supports('-webkit-tap-highlight-color', 'transparent'))) {
+        await expect(button).toHaveCSS('-webkit-tap-highlight-color', 'rgba(0, 0, 0, 0)');
+      }
+      await expectFits(page);
+    }
+  }
+  await page.getByRole('button', { name: 'Mai departe ❤️' }).click();
+  await page.clock.runFor(700);
+  await expect(page.getByRole('heading', { name: 'La mulți ani! ❤️' })).toBeVisible();
 });
 
 test('festive typography supports Romanian and keeps să-ți on one line', async ({ page }) => {

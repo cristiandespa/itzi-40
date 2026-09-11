@@ -43,32 +43,49 @@ export const birthdayConfig = {
     {
       chapter: 'DESPRE CE CONTEAZĂ',
       question: 'Ce rămâne cel mai mult dintr-o viață frumoasă?',
-      answers: ['Lucrurile pe care le-ai avut', 'Locurile în care ai fost', 'Oamenii cu care ai împărțit-o ❤️'],
-      reaction: 'Good answer. ❤️',
+      answers: [
+        { text: 'Lucrurile pe care le-ai avut', reaction: 'Mai ales cele care vin cu o poveste.' },
+        { text: 'Locurile în care ai fost', reaction: 'Unele locuri rămân cu tine mult după ce pleci.' },
+        { text: 'Oamenii cu care ai împărțit-o ❤️', reaction: 'Cu oamenii potriviți, și zilele obișnuite devin amintiri. ❤️' },
+      ],
     },
     {
       chapter: 'DESPRE OAMENII TĂI',
       question: 'Ce face ca o prietenie să reziste în timp?',
-      answers: ['Să vorbești în fiecare zi', 'Să fii acolo când contează', 'Să nu uiți niciodată parolele de Netflix'],
-      reaction: 'Asta voiam să auzim. 😌',
+      answers: [
+        { text: 'Să vorbești în fiecare zi', reaction: 'Un «ce faci?» care se transformă în două ore de povești.' },
+        { text: 'Să fii acolo când contează', reaction: 'Uneori, un «sunt aici» spune tot. ❤️' },
+        { text: 'Să nu uiți niciodată parolele de Netflix', reaction: 'Încredere, loialitate și acces la sezonul următor. 😄' },
+      ],
     },
     {
       chapter: 'DESPRE CE LAȘI ÎN URMĂ',
       question: 'Care crezi că este cel mai frumos lucru pe care îl poți lăsa în urma ta în oamenii pe care îi întâlnești?',
-      answers: ['Amintiri', 'Zâmbete', 'Felul în care i-ai făcut să se simtă'],
-      reaction: 'Unele lucruri chiar rămân.',
+      answers: [
+        { text: 'Amintiri', reaction: 'Cele care încep cu «mai ții minte când…?»' },
+        { text: 'Zâmbete', reaction: 'Și uite-așa, ziua cuiva devine un pic mai frumoasă.' },
+        { text: 'Felul în care i-ai făcut să se simtă', reaction: 'Văzuți. Ascultați. Iubiți. Asta nu se uită.' },
+      ],
     },
     {
       chapter: 'DESPRE NOUL CAPITOL',
       question: 'La {age} de ani, ce crezi că devine mai important?',
-      answers: ['Să ai mai mult timp', 'Să ai oamenii potriviți lângă tine', 'Să știi să te bucuri de ce ai', 'Toate de mai sus ❤️'],
-      reaction: 'Exact. Sau cel puțin așa sperăm. 😄',
+      answers: [
+        { text: 'Să ai mai mult timp', reaction: 'Pentru tine. Pentru ai tăi. Pentru încă o poveste.' },
+        { text: 'Să ai oamenii potriviți lângă tine', reaction: 'Cei lângă care poți fi tu. Fără filtre. ❤️' },
+        { text: 'Să știi să te bucuri de ce ai', reaction: 'O cafea bună. O masă împreună. O zi fără grabă.' },
+        { text: 'Toate de mai sus ❤️', reaction: 'Le luăm pe toate. La {age} știm ce vrem. 😄' },
+      ],
     },
     {
       chapter: 'DESPRE MARILE MISTERE',
       question: 'Și acum întrebarea cu adevărat importantă: ce se întâmplă după {age}?',
-      answers: ['Devii mai înțeleaptă', 'Devii mai frumoasă', 'Începi să spui «pe vremea mea…»', 'Nimic. Doar durează puțin mai mult să te ridici de pe canapea. 😂'],
-      reaction: 'Răspuns acceptat. Nu mai putem da timpul înapoi. 😂',
+      answers: [
+        { text: 'Devii mai înțeleaptă', reaction: 'Mai înțeleaptă, da. Mai cuminte? Nu promitem.' },
+        { text: 'Devii mai frumoasă', reaction: 'În cazul tău, avem deja dovezi. ❤️' },
+        { text: 'Începi să spui «pe vremea mea…»', reaction: 'Și, partea gravă, începi să ai și dreptate. 😂' },
+        { text: 'Nimic. Doar durează puțin mai mult să te ridici de pe canapea. 😂', reaction: 'Nu e vârsta. E o relație tot mai serioasă cu canapeaua. 😂' },
+      ],
     },
   ],
 };

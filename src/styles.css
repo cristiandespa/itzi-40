@@ -65,6 +65,13 @@ h1, h2, p { margin: 0; }
 .button { min-height: 56px; padding: 16px 26px; border-radius: 100px; border: 1px solid transparent; display: inline-flex; align-items: center; justify-content: center; gap: 38px; font-size: 16px; font-weight: 500; text-decoration: none; transition: transform .25s, box-shadow .25s, background .25s; }
 .primary { color: #fff8ed; background: var(--wine); box-shadow: 0 6px 15px #602c3c15, inset 0 1px 0 #ffffff15; min-width: 203px; }
 .button:active { transform: scale(.97); }
+.experience-cta { display: grid; grid-template-columns: 32px minmax(0, 1fr) 32px; gap: 8px; width: min(100%, 272px); min-width: 0; min-height: 58px; margin-inline: auto; padding: 10px 14px; border-color: #bda07870; background: linear-gradient(135deg, #743c4c, #552735); box-shadow: 0 8px 22px #602c3c1c, inset 0 1px 0 #fff5df20; line-height: 1.4; letter-spacing: .015em; }
+.experience-cta::before { content: ''; }
+.button-label { text-align: center; }
+.button-label .inline-heart { margin-left: 3px; font-size: 15px; vertical-align: 0; color: #dec299; }
+.button-direction { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid #e3c8a347; border-radius: 50%; color: #ead4b5; background: #fff3d906; }
+.button-direction .icon { width: 18px; height: 18px; transition: transform .25s; }
+.button.experience-cta:active { transform: scale(.97); box-shadow: 0 3px 10px #602c3c18, inset 0 1px 0 #fff5df20; }
 .duration { font-size: 11px; letter-spacing: .025em; color: #81746b; margin-top: 14px; }
 .page-footer { display: flex; justify-content: center; align-items: center; gap: 12px; padding: 16px 20px max(22px, env(safe-area-inset-bottom)); font-size: 9px; letter-spacing: .22em; color: #8c795f; }
 .footer-line { width: 25px; height: 1px; background: #b79c754a; }
@@ -193,6 +200,8 @@ body[data-screen='quiz'] #particles { opacity: .35; }
 @media (hover: hover) {
   .gallery-arrow:not([aria-disabled='true']):hover { background: #fffaf5; border-color: #ae8f75; }
   .primary:hover { background: #75394a; transform: translateY(-2px); box-shadow: 0 10px 22px #602c3c1b; }
+  .experience-cta:hover { background: linear-gradient(135deg, #804556, #602c3c); box-shadow: 0 11px 26px #602c3c24, inset 0 1px 0 #fff5df26; }
+  .experience-cta:hover .button-direction .icon { transform: translateX(2px); }
   .answer:not([aria-disabled='true']):hover { border-color: #ae8f75; background: #fffaf5; transform: translateY(-2px); }
   .play-button:not(:disabled):hover { transform: scale(1.05); }
   .download-link:not([aria-disabled='true']):hover { color: #a16d43; }
