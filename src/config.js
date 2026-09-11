@@ -1,8 +1,13 @@
 export const birthdayConfig = {
   name: 'Yțy',
   age: 40,
-  photo: 'images/birthday-photo.jpg',
-  photoPosition: '50% 40%',
+  photos: [
+    { src: 'images/birthday-photo.jpg', position: '50% 40%', alt: '{name}, într-o rochie neagră' },
+    { src: 'images/birthday-city-view.jpg', position: '50% 45%', alt: '{name}, deasupra orașului' },
+    { src: 'images/birthday-evening.jpg', position: '50% 85%', alt: '{name}, la o plimbare de seară' },
+    { src: 'images/birthday-conference.jpg', position: '50% 25%', alt: '{name}, la o conferință' },
+    { src: 'images/birthday-speaking.jpg', position: '50% 45%', alt: '{name}, în timpul unei prezentări' },
+  ],
   audio: 'audio/la-multi-ani.mp3',
   texts: {
     pageTitle: '{name} · Un nou capitol',
@@ -14,6 +19,7 @@ export const birthdayConfig = {
     unlocked: 'SURPRISE UNLOCKED',
     photoTitle: '{age} looks good on you.',
     photoCaption: 'Și acesta e doar începutul.',
+    galleryHint: 'Glisează pentru mai multe amintiri',
     continue: 'Mai departe ❤️',
     audioTitle: 'La mulți ani! ❤️',
     audioSubtitle: 'Un mesaj de la oamenii care țin la tine.',

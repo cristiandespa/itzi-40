@@ -102,8 +102,21 @@ body[data-screen='quiz'] #particles { opacity: .35; }
 .photo-screen { max-width: 720px; }
 .photo-title { font: 400 clamp(39px, 6vw, 66px)/1.05 var(--serif); max-width: 670px; margin: 12px auto 24px; letter-spacing: -.025em; }
 .photo-frame { position: relative; width: min(76vw, 326px); aspect-ratio: 4 / 5; max-height: 45svh; margin: 0 auto; border: 1px solid #b3986b70; border-radius: 120px 120px 12px 12px; box-shadow: 0 14px 45px #663b3411, 0 2px 6px #663b3408; background: #e6d8c7; padding: 7px; animation: photo-appear 1.3s cubic-bezier(.2,.65,.3,1) both; }
-.photo-frame img, .photo-fallback { width: 100%; height: 100%; border-radius: inherit; }
-.photo-frame img { position: absolute; top: 7px; left: 7px; width: calc(100% - 14px); height: calc(100% - 14px); object-fit: cover; animation: photo-appear 1s ease both; }
+.photo-viewport { display: flex; width: 100%; height: 100%; border-radius: inherit; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; }
+.photo-viewport::-webkit-scrollbar { display: none; }
+.photo-viewport:focus-visible { outline-offset: 9px; }
+.photo-slide { position: relative; flex: 0 0 100%; min-width: 0; height: 100%; scroll-snap-align: start; scroll-snap-stop: always; }
+.photo-frame img, .photo-fallback { width: 100%; height: 100%; }
+.photo-frame img { position: absolute; inset: 0; object-fit: cover; user-select: none; -webkit-user-drag: none; transition: opacity .35s; }
+.photo-frame img.is-loading { opacity: 0; }
+.gallery-navigation { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: min(82vw, 340px); margin: 12px auto 0; }
+.gallery-arrow { display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; border: 1px solid #b3986b66; border-radius: 50%; background: #fffcf661; color: var(--wine); transition: background .2s, transform .2s, opacity .2s; }
+.gallery-arrow[aria-disabled='true'] { opacity: .3; cursor: default; }
+.gallery-arrow:not([aria-disabled='true']):active { transform: scale(.94); }
+.gallery-arrow .icon { width: 18px; height: 18px; }
+.gallery-previous .icon { transform: rotate(180deg); }
+.gallery-counter { font-size: 12px; letter-spacing: .16em; font-variant-numeric: tabular-nums; color: #8b704b; }
+.gallery-hint { display: none; font-size: 11px; color: var(--muted); line-height: 1.5; margin-top: 3px; }
 .photo-fallback { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; background: radial-gradient(ellipse at 30% 25%, #d0a69936, transparent 65%), linear-gradient(145deg, #f6eee2, #e8d5c6); }
 .photo-fallback::before, .photo-fallback::after { content: ''; position: absolute; width: 95%; height: 110%; border: 1px solid #ab84503b; border-radius: 50%; transform: rotate(30deg); pointer-events: none; }
 .photo-fallback::after { transform: rotate(-20deg); width: 120%; height: 60%; }
@@ -173,10 +186,15 @@ body[data-screen='quiz'] #particles { opacity: .35; }
 .qr-result .button { min-width: 242px; border-color: #c9b496; }
 
 @media (hover: hover) {
+  .gallery-arrow:not([aria-disabled='true']):hover { background: #fffaf5; border-color: #ae8f75; }
   .primary:hover { background: #75394a; transform: translateY(-2px); box-shadow: 0 10px 22px #602c3c1b; }
   .answer:not([aria-disabled='true']):hover { border-color: #ae8f75; background: #fffaf5; transform: translateY(-2px); }
   .play-button:not(:disabled):hover { transform: scale(1.05); }
   .download-link:not([aria-disabled='true']):hover { color: #a16d43; }
+}
+
+@media (pointer: coarse) {
+  .gallery-hint { display: block; }
 }
 
 @media (min-width: 1100px) and (min-height: 850px) {
@@ -275,6 +293,18 @@ body[data-screen='quiz'] #particles { opacity: .35; }
   .quiz-footnote { display: none; }
   .reaction { min-height: 36px; }
   body[data-screen='quiz'] .page-footer { display: none; }
+}
+
+@media (max-width: 600px) and (max-height: 740px) {
+  .photo-screen .photo-caption { display: none; }
+  .photo-screen .continue-slot { margin-top: 12px; min-height: 54px; }
+  .gallery-navigation { margin-top: 8px; }
+}
+
+@media (max-width: 600px) and (max-height: 650px) {
+  body[data-screen='photo'] .page-footer { display: none; }
+  .photo-title { font-size: 32px; margin-top: 8px; margin-bottom: 12px; }
+  .photo-frame { max-height: calc(100svh - 385px); }
 }
 
 @keyframes enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }

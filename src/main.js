@@ -7,10 +7,11 @@ import '@fontsource/manrope/latin-ext-400.css';
 import '@fontsource/manrope/latin-500.css';
 import '@fontsource/manrope/latin-ext-500.css';
 import './styles.css';
-import { birthdayConfig as config, personalize, assetUrl } from './config.js';
+import { birthdayConfig as config, personalize } from './config.js';
 import { icon } from './icons.js';
 import { setupFestive, celebrate } from './festive.js';
 import { createAudioPlayer } from './player.js';
+import { createPhotoGallery } from './gallery.js';
 
 const main = document.querySelector('#experience');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -108,30 +109,24 @@ async function renderPhoto() {
   await showScreen(`<section class="screen photo-screen" aria-labelledby="photo-title">
     <p class="eyebrow">${escapeHtml(config.name)}, ACESTA E MOMENTUL TĂU</p>
     <h1 id="photo-title" class="photo-title" lang="en" tabindex="-1" data-focus>${escapeHtml(text.photoTitle)}</h1>
-    <div class="photo-frame"><div class="photo-fallback"><span class="fallback-top">O EDIȚIE DE NEÎNLOCUIT</span><span class="fallback-age">${config.age}</span><span class="fallback-name">${escapeHtml(config.name)}</span><span class="fallback-bottom">CU DRAG, DE LA OAMENII TĂI</span></div><img id="birthday-photo" alt="${escapeHtml(config.name)}, sărbătorita noastră" hidden /><span class="frame-sparkle frame-sparkle-one" aria-hidden="true"></span><span class="frame-sparkle frame-sparkle-two" aria-hidden="true"></span></div>
+    <div class="photo-gallery" role="region" aria-roledescription="carusel" aria-labelledby="photo-title">
+      <div class="photo-frame"><div class="photo-viewport" tabindex="0" aria-label="Fotografii cu ${escapeHtml(config.name)}" aria-describedby="gallery-status"></div><span class="frame-sparkle frame-sparkle-one" aria-hidden="true"></span><span class="frame-sparkle frame-sparkle-two" aria-hidden="true"></span></div>
+      <template class="photo-slide-template"><div class="photo-slide" role="group" aria-roledescription="diapozitiv"><div class="photo-fallback"><span class="fallback-top">O EDIȚIE DE NEÎNLOCUIT</span><span class="fallback-age">${config.age}</span><span class="fallback-name">${escapeHtml(config.name)}</span><span class="fallback-bottom">CU DRAG, DE LA OAMENII TĂI</span></div><img hidden draggable="false" /></div></template>
+      <div class="gallery-navigation"><button class="gallery-arrow gallery-previous" aria-label="Fotografia anterioară">${icon('arrow')}</button><div class="gallery-position"><span class="gallery-counter" aria-hidden="true"></span><p class="gallery-hint">${escapeHtml(text.galleryHint)}</p></div><button class="gallery-arrow gallery-next" aria-label="Fotografia următoare">${icon('arrow')}</button></div>
+      <p class="sr-only gallery-status" id="gallery-status" role="status" aria-live="polite" aria-atomic="true"></p>
+    </div>
     <p class="photo-caption">${escapeHtml(text.photoCaption)}</p>
     <div class="continue-slot"><button class="button primary photo-continue" id="continue" hidden>${escapeHtml(text.continue)}${icon('arrow')}</button></div>
   </section>`, 'photo');
-  const photo = main.querySelector('#birthday-photo');
-  let markReady;
-  const ready = new Promise((resolve) => { markReady = resolve; });
-  const fallback = main.querySelector('.photo-fallback');
-  photo.style.objectPosition = config.photoPosition;
-  photo.addEventListener('load', () => {
-    photo.hidden = false;
-    fallback.hidden = true;
-    markReady();
-  }, { once: true });
-  photo.addEventListener('error', () => { photo.hidden = true; markReady(); }, { once: true });
-  if (config.photo) photo.src = assetUrl(config.photo);
-  else markReady();
-  await Promise.race([ready, sleep(5000)]);
+  const gallery = createPhotoGallery(main.querySelector('.photo-gallery'), config);
+  await Promise.race([gallery.ready, sleep(5000)]);
   await sleep(2600);
   const next = main.querySelector('#continue');
   next.hidden = false;
   next.addEventListener('click', async () => {
     if (next.disabled) return;
     next.disabled = true;
+    gallery.destroy();
     await renderAudio();
   });
 }

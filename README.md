@@ -1,6 +1,6 @@
 # Yțy · 40
 
-O experiență aniversară în română: cinci întrebări, o dezvăluire cinematografică, o fotografie și mesaje audio. HTML/CSS/JavaScript vanilla, Vite pentru dezvoltare și build. Fără backend, conturi, analytics sau salvarea răspunsurilor.
+O experiență aniversară în română: cinci întrebări, o dezvăluire cinematografică, o galerie foto și mesaje audio. HTML/CSS/JavaScript vanilla, Vite pentru dezvoltare și build. Fără backend, conturi, analytics sau salvarea răspunsurilor.
 
 ## Local
 
@@ -8,9 +8,9 @@ Node.js 22.12+ și npm: `npm install`, apoi `npm run dev`. Pentru producție: `n
 
 ## Personalizare
 
-Totul se modifică în `src/config.js`: `name`, `age`, `photo`, `photoPosition`, `audio`, `texts`, `questions` și `sequence`. Textele acceptă `{name}` și `{age}`. Dacă schimbi vârsta, adaptează și subtitlul „Patru decenii”. Numele inițial este „Yțy”.
+Totul se modifică în `src/config.js`: `name`, `age`, `photos`, `audio`, `texts`, `questions` și `sequence`. Textele acceptă `{name}` și `{age}`. Dacă schimbi vârsta, adaptează și subtitlul „Patru decenii”. Numele inițial este „Yțy”.
 
-- Fotografie: `public/images/birthday-photo.jpg` (este inclus cadrul în rochie neagră). Pentru alt fișier, modifică doar `photo`. `photoPosition` controlează încadrarea feței. Fără fotografie apare o copertă cu numele și vârsta, fără imagine deteriorată.
+- Fotografii: sunt incluse toate cele cinci imagini din folderul `Poze`, în `public/images/`. Lista `photos` stabilește ordinea; fiecare intrare are `src` (fișier), `position` (încadrarea feței) și `alt` (descriere accesibilă). Cadrul în rochie neagră apare primul. Galeria permite swipe pe telefon, săgeți și tastele ←/→, Home/End; nu avansează automat. Dacă o fotografie lipsește, apare coperta cu numele și vârsta, iar navigarea funcționează în continuare. Pentru o singură fotografie, păstrează o singură intrare în listă.
 - Mesaje: `public/audio/la-multi-ani.mp3`. Fișierul real nu este inclus. Până îl adaugi, playerul arată un mesaj discret și dezactivează redarea/descărcarea. Nu există autoplay.
 - Folosește căi locale, de exemplu `images/birthday-photo.jpg`; acestea funcționează și sub adresa unui repository GitHub Pages.
 - QR: deschide `/qr.html` (sau `/nume-repository/qr.html`), introdu URL-ul public final și descarcă PNG-ul. Generarea este locală în browser; verifică scanarea înainte de imprimare.
@@ -25,4 +25,4 @@ După schimbarea fotografiei, audio-ului sau configurației, publică din nou. `
 
 ## Verificări
 
-`npm test` rulează verificările de browser (la prima utilizare: `npx playwright install chromium webkit`). Acoperă fluxul complet, viewport-uri mobile/desktop/landscape, fallback-uri, tastatură, reduced motion, redare/seek/pauză/descărcare și decodarea PNG-ului QR. Fișierele multimedia pentru teste sunt temporare, nu mesaje sau fotografii ale sărbătoritei.
+`npm test` rulează verificările de browser (la prima utilizare: `npx playwright install chromium webkit`). Acoperă fluxul complet, viewport-uri mobile/desktop/landscape, galeria cu swipe, fallback-uri, tastatură, reduced motion, redare/seek/pauză/descărcare și decodarea PNG-ului QR. Fișierele multimedia pentru teste sunt temporare, nu mesaje sau fotografii ale sărbătoritei.

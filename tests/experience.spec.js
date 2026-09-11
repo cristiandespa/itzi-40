@@ -63,7 +63,7 @@ test('complete experience, no early reveal, safe media fallbacks', async ({ page
   await expect(page.getByText(/mesaj|audio|surpriz/i)).toHaveCount(0);
   await photoMoment(page);
   await expect(page.getByRole('heading', { name: '40 looks good on you.' })).toBeVisible();
-  await expect(page.locator('.photo-fallback')).toBeVisible();
+  await expect(page.locator('.photo-fallback').first()).toBeVisible();
   await expect(page.locator('#birthday-photo')).toBeHidden();
   await expectFits(page);
   await page.getByRole('button', { name: 'Mai departe ❤️' }).click();
@@ -112,10 +112,82 @@ test('real photo loads without distortion and the button waits', async ({ page }
   await quiz(page);
   for (const duration of [1200, 1600, 1700, 2600, 3000, 900, 1400]) await page.clock.runFor(duration + 250);
   await expect(page.locator('#birthday-photo')).toBeVisible();
-  await expect(page.locator('.photo-fallback')).toBeHidden();
+  await expect(page.locator('.photo-fallback').first()).toBeHidden();
   expect(await page.locator('#birthday-photo').evaluate((element) => getComputedStyle(element).objectFit)).toBe('cover');
   await page.clock.runFor(3000);
   await expect(page.getByRole('button', { name: 'Mai departe ❤️' })).toBeVisible();
+});
+
+test('gallery shows all five photos, supports arrows and keyboard, and preserves position on resize', async ({ page }) => {
+  await start(page);
+  await photoMoment(page);
+  await page.clock.resume();
+  const slides = page.locator('.photo-slide');
+  const viewport = page.locator('.photo-viewport');
+  const counter = page.locator('.gallery-counter');
+  await expect(slides).toHaveCount(5);
+  await expect(page.getByRole('button', { name: 'Fotografia anterioară' })).toHaveAttribute('aria-disabled', 'true');
+  for (let index = 0; index < 5; index += 1) {
+    await expect(counter).toHaveText(`0${index + 1} / 05`);
+    await expect(slides.nth(index)).toHaveAttribute('aria-hidden', 'false');
+    await expect(slides.nth(index).locator('.photo-fallback')).toBeHidden();
+    expect(await slides.nth(index).locator('img').evaluate((image) => image.naturalWidth)).toBeGreaterThan(0);
+    if (index < 4) {
+      await page.getByRole('button', { name: 'Fotografia următoare' }).click();
+      await expect(counter).toHaveText(`0${index + 2} / 05`);
+    }
+  }
+  await expect(page.getByRole('button', { name: 'Fotografia următoare' })).toHaveAttribute('aria-disabled', 'true');
+  await viewport.focus();
+  await page.keyboard.press('ArrowLeft');
+  await expect(counter).toHaveText('04 / 05');
+  await expect.poll(() => viewport.evaluate((element) => Math.abs(element.scrollLeft - 3 * element.clientWidth))).toBeLessThanOrEqual(2);
+  await page.setViewportSize({ width: 320, height: 568 });
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  await expect.poll(() => viewport.evaluate((element) => Math.abs(element.scrollLeft - 3 * element.clientWidth))).toBeLessThanOrEqual(2);
+  await expect(counter).toHaveText('04 / 05');
+  await expectFits(page);
+  await viewport.focus();
+  await page.keyboard.press('Home');
+  await expect(counter).toHaveText('01 / 05');
+  await page.keyboard.press('End');
+  await expect(counter).toHaveText('05 / 05');
+  await page.getByRole('button', { name: 'Mai departe ❤️' }).click();
+  await expect(page.getByRole('heading', { name: 'La mulți ani! ❤️' })).toBeVisible();
+});
+
+test('native horizontal swipe changes the photo and keeps the page in place', async ({ page, browserName, isMobile }) => {
+  test.skip(browserName !== 'chromium' || !isMobile, 'Native touch gesture uses Chromium device emulation.');
+  await start(page);
+  await photoMoment(page);
+  await page.clock.resume();
+  const bounds = await page.locator('.photo-viewport').boundingBox();
+  const client = await page.context().newCDPSession(page);
+  const touchY = bounds.y + bounds.height * .55;
+  await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: bounds.x + bounds.width * .85, y: touchY }] });
+  for (let step = 1; step <= 6; step += 1) {
+    await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: bounds.x + bounds.width * (.85 - step * .11), y: touchY }] });
+  }
+  await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await expect(page.locator('.gallery-counter')).toHaveText('02 / 05');
+  await expect(page.locator('.photo-slide').nth(1)).toHaveAttribute('aria-hidden', 'false');
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
+});
+
+test('gallery navigation survives a missing photo', async ({ page }) => {
+  await page.route('**/images/birthday-city-view.jpg', (route) => route.fulfill({ status: 404, body: '' }));
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await start(page);
+  await photoMoment(page);
+  await page.getByRole('button', { name: 'Fotografia următoare' }).click();
+  await page.clock.runFor(100);
+  await expect(page.locator('.gallery-counter')).toHaveText('02 / 05');
+  await expect(page.locator('.photo-slide').nth(1).locator('.photo-fallback')).toBeVisible();
+  await expect(page.locator('.photo-slide').nth(1).locator('img')).toBeHidden();
+  await page.getByRole('button', { name: 'Fotografia următoare' }).click();
+  await page.clock.runFor(100);
+  await expect(page.locator('.gallery-counter')).toHaveText('03 / 05');
+  await expect(page.locator('.photo-slide').nth(2).locator('.photo-fallback')).toBeHidden();
 });
 
 test('audio plays, pauses, seeks and downloads when available', async ({ page }) => {
