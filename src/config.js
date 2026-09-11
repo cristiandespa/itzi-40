@@ -73,7 +73,7 @@ export const birthdayConfig = {
       answers: [
         { text: 'Să ai mai mult timp', reaction: 'Pentru tine. Pentru ai tăi. Pentru încă o poveste.' },
         { text: 'Să ai oamenii potriviți lângă tine', reaction: 'Cei lângă care poți fi tu. Fără filtre. ❤️' },
-        { text: 'Să știi să te bucuri de ce ai', reaction: 'O cafea bună. O masă împreună. O zi fără grabă.' },
+        { text: 'Să știi să te bucuri de ce ai', reaction: 'O cola rece. O masă împreună. O zi fără grabă.' },
         { text: 'Toate de mai sus ❤️', reaction: 'Le luăm pe toate. La {age} știm ce vrem. 😄' },
       ],
     },
