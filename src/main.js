@@ -29,6 +29,9 @@ const sleep = (duration) => new Promise((resolve) => window.setTimeout(resolve, 
 async function showScreen(content, screenName, focus = true) {
   const previous = main.firstElementChild;
   if (previous) {
+    const { opacity, transform } = getComputedStyle(previous);
+    previous.style.opacity = opacity;
+    previous.style.transform = transform;
     previous.classList.add('leaving');
     await sleep(reducedMotion.matches ? 0 : 220);
   }

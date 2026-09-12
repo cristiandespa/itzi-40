@@ -11,6 +11,8 @@ export function createPhotoGallery(container, config) {
   const photos = config.photos?.length ? config.photos : [{}];
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let currentIndex = 0;
+  let targetIndex = null;
+  let viewportWidth = viewport.clientWidth;
   let scrollFrame;
   let markReady;
   const ready = new Promise((resolve) => { markReady = resolve; });
@@ -57,25 +59,37 @@ export function createPhotoGallery(container, config) {
   };
   const navigateTo = (index) => {
     const target = Math.max(0, Math.min(photos.length - 1, index));
+    if (target === targetIndex) return;
+    targetIndex = target;
     viewport.scrollTo({ left: target * viewport.clientWidth, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
   };
   viewport.addEventListener('scroll', () => {
     cancelAnimationFrame(scrollFrame);
     scrollFrame = requestAnimationFrame(() => {
-      if (viewport.clientWidth) updatePosition(Math.round(viewport.scrollLeft / viewport.clientWidth));
+      if (!viewport.clientWidth) return;
+      const index = Math.round(viewport.scrollLeft / viewport.clientWidth);
+      if (index !== currentIndex) updatePosition(index);
+      if (targetIndex !== null && Math.abs(viewport.scrollLeft - targetIndex * viewport.clientWidth) <= 2) targetIndex = null;
     });
   }, { passive: true });
-  previous.addEventListener('click', () => navigateTo(currentIndex - 1));
-  next.addEventListener('click', () => navigateTo(currentIndex + 1));
+  ['pointerdown', 'touchstart', 'wheel'].forEach((event) => viewport.addEventListener(event, () => { targetIndex = null; }, { passive: true }));
+  previous.addEventListener('click', () => navigateTo((targetIndex ?? currentIndex) - 1));
+  next.addEventListener('click', () => navigateTo((targetIndex ?? currentIndex) + 1));
   container.addEventListener('keydown', (event) => {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
     event.preventDefault();
     if (event.key === 'Home') navigateTo(0);
     else if (event.key === 'End') navigateTo(photos.length - 1);
-    else navigateTo(currentIndex + (event.key === 'ArrowRight' ? 1 : -1));
+    else navigateTo((targetIndex ?? currentIndex) + (event.key === 'ArrowRight' ? 1 : -1));
   });
   const resizeObserver = new ResizeObserver(() => {
-    viewport.scrollTo({ left: currentIndex * viewport.clientWidth, behavior: 'instant' });
+    const width = viewport.clientWidth;
+    if (!width || width === viewportWidth) return;
+    viewportWidth = width;
+    const index = targetIndex ?? currentIndex;
+    targetIndex = null;
+    viewport.scrollTo({ left: index * width, behavior: 'instant' });
+    updatePosition(index);
   });
   resizeObserver.observe(viewport);
   updatePosition(0);
