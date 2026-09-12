@@ -16,9 +16,26 @@ export function createAudioPlayer(container, download) {
   const retry = container.querySelector('.retry-button');
   const current = container.querySelector('.current-time');
   const total = container.querySelector('.total-time');
+  const bars = [...container.querySelectorAll('.waveform span')];
+  const externalDownload = Boolean(config.downloadUrl);
   let loadTimer;
   let loading = false;
   let seeking = false;
+
+  const enableDownload = () => {
+    download.href = externalDownload ? config.downloadUrl : assetUrl(config.audio);
+    if (externalDownload) {
+      download.target = '_blank';
+      download.rel = 'noopener noreferrer';
+      download.removeAttribute('download');
+    } else {
+      download.download = 'la-multi-ani.mp3';
+      download.removeAttribute('target');
+      download.removeAttribute('rel');
+    }
+    download.removeAttribute('aria-disabled');
+    download.removeAttribute('tabindex');
+  };
 
   const updatePlayback = () => {
     const playing = !audio.paused && !audio.ended;
@@ -35,7 +52,7 @@ export function createAudioPlayer(container, download) {
     slider.setAttribute('aria-valuetext', `${formatTime(audio.currentTime)} din ${formatTime(duration)}`);
     current.textContent = formatTime(audio.currentTime);
     total.textContent = formatTime(duration);
-    container.querySelectorAll('.waveform span').forEach((bar, index, bars) => bar.classList.toggle('heard', index / bars.length * 100 <= percentage));
+    bars.forEach((bar, index) => bar.classList.toggle('heard', index / bars.length * 100 <= percentage));
   };
   const unavailable = () => {
     loading = false;
@@ -43,33 +60,34 @@ export function createAudioPlayer(container, download) {
     audio.pause();
     play.disabled = true;
     slider.disabled = true;
-    download.removeAttribute('href');
-    download.setAttribute('aria-disabled', 'true');
-    download.tabIndex = -1;
+    if (!externalDownload) {
+      download.removeAttribute('href');
+      download.setAttribute('aria-disabled', 'true');
+      download.tabIndex = -1;
+    }
     status.textContent = config.texts.audioMissing;
     retry.textContent = config.texts.audioRetry;
     retry.hidden = false;
     updatePlayback();
   };
   const ready = () => {
-    if (!Number.isFinite(audio.duration) || audio.duration <= 0) return;
+    if (audio.error || !Number.isFinite(audio.duration) || audio.duration <= 0) return;
     loading = false;
     clearTimeout(loadTimer);
     play.disabled = false;
     slider.disabled = false;
     status.textContent = '';
     retry.hidden = true;
-    download.href = assetUrl(config.audio);
-    download.download = 'la-multi-ani.mp3';
-    download.removeAttribute('aria-disabled');
-    download.removeAttribute('tabindex');
+    enableDownload();
     updateProgress();
   };
   const load = () => {
     if (loading) return;
     loading = true;
+    seeking = false;
     retry.hidden = true;
     play.disabled = true;
+    slider.disabled = true;
     status.textContent = config.texts.audioLoading;
     audio.src = assetUrl(config.audio);
     audio.load();
@@ -82,7 +100,8 @@ export function createAudioPlayer(container, download) {
       if (audio.ended) audio.currentTime = 0;
       await audio.play();
       status.textContent = '';
-    } catch {
+    } catch (error) {
+      if (error.name === 'AbortError') return;
       if (audio.error) unavailable();
       else status.textContent = 'Atinge din nou butonul pentru a porni mesajul.';
     }
@@ -96,7 +115,8 @@ export function createAudioPlayer(container, download) {
     current.textContent = formatTime(position);
     audio.currentTime = position;
   });
-  slider.addEventListener('change', () => { seeking = false; updateProgress(); });
+  const finishSeeking = () => { seeking = false; updateProgress(); };
+  ['change', 'pointerup', 'pointercancel', 'blur'].forEach((event) => slider.addEventListener(event, finishSeeking));
   retry.addEventListener('click', load);
   audio.addEventListener('loadedmetadata', ready);
   audio.addEventListener('canplay', ready);
@@ -107,5 +127,6 @@ export function createAudioPlayer(container, download) {
   audio.addEventListener('playing', () => { status.textContent = ''; });
   ['play', 'pause', 'ended'].forEach((event) => audio.addEventListener(event, updatePlayback));
   download.addEventListener('click', (event) => { if (!download.hasAttribute('href')) event.preventDefault(); });
+  if (externalDownload) enableDownload();
   load();
 }

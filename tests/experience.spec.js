@@ -64,13 +64,20 @@ async function expectFits(page) {
 
 test('complete experience, no early reveal, safe media fallbacks', async ({ page }) => {
   const errors = [];
+  let audioRequests = 0;
   page.on('pageerror', (error) => errors.push(error.message));
+  page.on('request', (request) => { if (request.url().endsWith('.mp3')) audioRequests += 1; });
   await page.route('**/images/birthday-photo.jpg', (route) => route.fulfill({ status: 404, body: '' }));
+  await page.route('**/src/config.js', async (route) => {
+    const response = await route.fetch();
+    await route.fulfill({ response, body: (await response.text()).replace('audio/la-multi-ani.mp3', 'audio/missing-test.mp3') });
+  });
   await start(page);
   await expectFits(page);
   await expect(page).toHaveTitle('Yțy · Povestea continuă');
   await expect(page.getByText(/mesaj|audio|surpriz/i)).toHaveCount(0);
   await photoMoment(page);
+  expect(audioRequests).toBe(0);
   await expect(page.getByRole('heading', { name: '40 looks good on you.' })).toBeVisible();
   await expect(page.locator('.photo-fallback').first()).toBeVisible();
   await expect(page.locator('#birthday-photo')).toBeHidden();
@@ -83,8 +90,10 @@ test('complete experience, no early reveal, safe media fallbacks', async ({ page
   await expect(page.locator('.audio-subtitle')).toHaveCount(0);
   await expect(page.getByText(/cele mai frumoase lucruri|vocile oamenilor tăi|un mesaj de la oamenii/i)).toHaveCount(0);
   await expect(page.locator('.player-status')).toContainText('Amintirea ta e pe drum');
+  await expect(page.locator('audio')).toHaveAttribute('src', /audio\/missing-test\.mp3$/);
   await expect(page.locator('.play-button')).toBeDisabled();
-  await expect(page.locator('#download-audio')).toHaveAttribute('aria-disabled', 'true');
+  await expect(page.locator('#download-audio')).toHaveAttribute('href', birthdayConfig.downloadUrl);
+  await expect(page.locator('#download-audio')).not.toHaveAttribute('aria-disabled');
   expect(await page.locator('audio').evaluate((audio) => audio.paused)).toBe(true);
   expect(errors).toEqual([]);
 });
@@ -206,7 +215,7 @@ test('audio plays, pauses, seeks and downloads when available', async ({ page })
   const audioBytes = await readFile('.local/test-audio.mp3');
   await page.route('**/src/config.js', async (route) => {
     const response = await route.fetch();
-    await route.fulfill({ response, body: (await response.text()).replace('audio/la-multi-ani.mp3', '.local/test-audio.mp3') });
+    await route.fulfill({ response, body: (await response.text()).replace('audio/la-multi-ani.mp3', '.local/test-audio.mp3').replace(/downloadUrl: '[^']*'/, "downloadUrl: ''") });
   });
   await start(page);
   await audioMoment(page);

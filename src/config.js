@@ -10,6 +10,7 @@ export const birthdayConfig = {
     { src: 'images/birthday-speaking.jpg', position: '50% 45%', alt: '{name}, în timpul unei prezentări' },
   ],
   audio: 'audio/la-multi-ani.mp3',
+  downloadUrl: 'https://drive.google.com/file/d/1FjNqsMgjK2gfSB5j_enOUtgS51UfEa45/view',
   texts: {
     pageTitle: '{name} · Povestea continuă',
     eyebrow: 'ASTĂZI, TOTUL E DESPRE TINE',

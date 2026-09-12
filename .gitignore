@@ -4,6 +4,7 @@ test-results/
 playwright-report/
 .local/
 Poze/
+Yty Audio/
 .env*
 !.env.example
 *.log
